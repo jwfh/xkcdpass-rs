@@ -15,11 +15,12 @@ const USAGE: &'static str = "
 Generate XKCD style passwords.
 
 Usage:
-  xkcdpass [options] [-c <count>] [-w <list>...]
+  xkcdpass [options] [-c <count>] [-w <list>...] [-d <delim>]
 
 Options:
   -h --help                  Show this screen.
   -v --version               Show version.
+  -d --delimiter <delim>     Set delimiter (default space)
   -c --count <count>         Number of words [default: 4].
   -w --use-wordlists <list>  Wordlist to use.
 ";
@@ -30,6 +31,7 @@ static DEFAULT_WORDLIST: &'static str = include_str!("wordlist.txt");
 struct Args {
     flag_c: usize,
     flag_w: Option<Vec<String>>,
+    flag_d: String,
     flag_v: bool,
 }
 
@@ -68,6 +70,12 @@ fn main() {
         process::exit(0);
     }
 
+    // Set delimiter
+    let mut delimiter: String = String::from(" ");
+    if args.flag_d != "" {
+       delimiter = args.flag_d;
+    }
+
     // Validate count
     if args.flag_c < 1 {
         println!("Error: Word count must be greater than 0");
@@ -98,7 +106,7 @@ fn main() {
     // Print words
     let count = args.flag_c;
     for _ in 1..count {
-        print!("{} ", get_random_word(&lines, max_offset));
+        print!("{}{}", get_random_word(&lines, max_offset), delimiter);
     }
     println!("{}", get_random_word(&lines, max_offset));
 }
